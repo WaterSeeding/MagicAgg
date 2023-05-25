@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import * as THREE from "three";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
-import { RGBELoader } from 'three/examples/jsm/loaders/RGBELoader';
+import { RGBELoader } from "three/examples/jsm/loaders/RGBELoader";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 import { SelectiveBloom } from "./js/SelectiveBloom";
 import { DatGUI } from "./js/DatGUI";
@@ -18,7 +18,7 @@ const getCubeMapTexture = (renderer: THREE.WebGLRenderer, path: string) => {
         resolve(envMap);
       },
       undefined,
-      reject,
+      reject
     );
   });
 };
@@ -51,31 +51,21 @@ export default function App() {
       1,
       200
     );
-    camera.position.set(0, 5, 10);
+    camera.position.set(0, 2, 10);
     camera.lookAt(0, 0, 0);
 
     const controls = new OrbitControls(camera, renderer.domElement);
-    controls.target.set(0, 0.5, 0);
+    controls.target.set(0, 0, 0);
     controls.autoRotate = true;
-    controls.autoRotateSpeed = 6;
+    controls.autoRotateSpeed = 2;
 
     let selectiveBloom = new SelectiveBloom(scene, camera, renderer);
     new DatGUI(renderer, selectiveBloom);
 
-    // getCubeMapTexture(
-    //   renderer,
-    //   './hdr/DS360_Volume_2_bonus_Ref.hdr',
-    // ).then((envMap: THREE.Texture | any) => {
-    //   scene.environment = envMap;
-    //   scene.background = envMap;
-    //   renderer.toneMappingExposure = 1.0;
-    // });
-
-    let envMap = await getCubeMapTexture(
+    let envMap = (await getCubeMapTexture(
       renderer,
-      './hdr/DS360_Volume_2_bonus_Ref.hdr',
-    ) as THREE.Texture
-    // console.log('envMap', envMap);
+      "./hdr/satara_night_4k.hdr"
+    )) as THREE.Texture;
 
     let light = new THREE.DirectionalLight();
     light.position.setScalar(1);
@@ -142,7 +132,7 @@ export default function App() {
         mixer = new THREE.AnimationMixer(gltf.scene);
         mixer.clipAction(gltf.animations[0]).play();
 
-        model.position.setY(1.0);
+        model.position.setY(0.0);
         scene.add(model!);
 
         resolve({
@@ -165,7 +155,7 @@ export default function App() {
             ring = gltf.scene.getObjectByName("Plane_0");
             ring.material = new THREE.MeshStandardMaterial({
               map: texture,
-              transparent: true
+              transparent: true,
             });
             ring.userData = {
               // @ts-ignore;
@@ -173,6 +163,7 @@ export default function App() {
             };
             ring.rotateX(-Math.PI / 2);
             ring.scale.set(2, 2, 2);
+            ring.position.setY(-1.0);
             scene.add(ring);
 
             resolve({
