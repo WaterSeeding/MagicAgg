@@ -1,10 +1,27 @@
 import { useEffect, useState } from "react";
 import * as THREE from "three";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
+import { RGBELoader } from 'three/examples/jsm/loaders/RGBELoader';
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 import { SelectiveBloom } from "./js/SelectiveBloom";
 import { DatGUI } from "./js/DatGUI";
 import "./App.css";
+
+const getCubeMapTexture = (renderer: THREE.WebGLRenderer, path: string) => {
+  return new Promise((resolve, reject) => {
+    new RGBELoader().load(
+      path,
+      (texture) => {
+        const pmremGenerator = new THREE.PMREMGenerator(renderer);
+        const envMap = pmremGenerator.fromEquirectangular(texture).texture;
+        pmremGenerator.dispose();
+        resolve(envMap);
+      },
+      undefined,
+      reject,
+    );
+  });
+};
 
 export default function App() {
   const [isInitScene, setIsInitScene] = useState<boolean>(false);
@@ -45,6 +62,21 @@ export default function App() {
     let selectiveBloom = new SelectiveBloom(scene, camera, renderer);
     new DatGUI(renderer, selectiveBloom);
 
+    // getCubeMapTexture(
+    //   renderer,
+    //   './hdr/DS360_Volume_2_bonus_Ref.hdr',
+    // ).then((envMap: THREE.Texture | any) => {
+    //   scene.environment = envMap;
+    //   scene.background = envMap;
+    //   renderer.toneMappingExposure = 1.0;
+    // });
+
+    let envMap = await getCubeMapTexture(
+      renderer,
+      './hdr/DS360_Volume_2_bonus_Ref.hdr',
+    ) as THREE.Texture
+    // console.log('envMap', envMap);
+
     let light = new THREE.DirectionalLight();
     light.position.setScalar(1);
     scene.add(light, new THREE.AmbientLight(0xffffff, 0.5));
@@ -62,12 +94,16 @@ export default function App() {
       if (model) {
         model.material.color.set(0x000000);
         ring.material.color.set(0x000000);
+        scene.background = null;
       }
       renderer.setClearColor(0x000000);
       selectiveBloom.bloomComposer.render();
       if (model) {
         model.material.color.copy(model.userData.color);
         ring.material.color.copy(ring.userData.color);
+      }
+      if (envMap) {
+        scene.background = envMap;
       }
       renderer.setClearColor(0x1d1d1d);
       selectiveBloom.finalComposer.render();
