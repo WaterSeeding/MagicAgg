@@ -188,6 +188,9 @@ export default function App() {
 
   return (
     <div className="App">
+      <div className="content">
+        <a className="title" href="https://github.com/WaterSeeding/MagicAgg" target="_blank">Made in JYuan</a>
+      </div>
       <canvas
         className="webgl"
         style={{ width: "100%", height: "100%" }}
