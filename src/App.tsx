@@ -5,6 +5,8 @@ import { RGBELoader } from "three/examples/jsm/loaders/RGBELoader";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 import { SelectiveBloom } from "./js/SelectiveBloom";
 import { DatGUI } from "./js/DatGUI";
+import Particles from "./Particles/Particles";
+import Time from "./Time";
 import "./App.css";
 
 const getCubeMapTexture = (renderer: THREE.WebGLRenderer, path: string) => {
@@ -34,6 +36,7 @@ export default function App() {
   }, []);
 
   const initScene = async () => {
+    const time = new Time();
     const canvas = document.querySelector("canvas.webgl") as HTMLCanvasElement;
     const renderer = new THREE.WebGLRenderer({
       canvas: document.querySelector("canvas.webgl")!,
@@ -57,7 +60,7 @@ export default function App() {
     const controls = new OrbitControls(camera, renderer.domElement);
     controls.target.set(0, 0, 0);
     controls.autoRotate = true;
-    controls.autoRotateSpeed = 2;
+    controls.autoRotateSpeed = 0.5;
 
     let selectiveBloom = new SelectiveBloom(scene, camera, renderer);
     new DatGUI(renderer, selectiveBloom);
@@ -74,11 +77,20 @@ export default function App() {
     let { model, mixer }: any = await addModel(scene);
     let { ring }: any = await addRing(scene);
 
+    let particles = new Particles(scene);
+
     let clock = new THREE.Clock();
 
     window.addEventListener("resize", onResize);
     renderer.setAnimationLoop(() => {
       let delta = clock.getDelta();
+
+      time.tick();
+
+      particles.update({
+        value: time.value(),
+      });
+
       if (mixer) mixer.update(delta);
 
       if (model) {
@@ -98,7 +110,6 @@ export default function App() {
       renderer.setClearColor(0x1d1d1d);
       selectiveBloom.finalComposer.render();
 
-      // renderer.render(scene, camera);
       controls.update();
     });
 
