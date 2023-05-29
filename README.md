@@ -1,9 +1,9 @@
-![MagicAgg](https://gitee.com/JYuan86/jyuan-images/raw/master/assets/imgs/2023052902.gif)
+![MagicAgg](https://github.com/WaterSeeding/JYuanImages/raw/master/assets/imgs/2023052902.gif)
 
 >#### 有缘千里来相会
 >
 >宝，来都来了，给一个Star吧！
-
+<br/>
 
 # MagicAgg
 - 使用Three.js创造出一颗神秘而神奇的魔力蛋，它的形状宛如一个圆润的蛋形，散发出淡淡的光芒。
@@ -19,6 +19,7 @@
 - Shader
 - 粒子
 - 后期处理
+<br/>
 
 ## 演示
 这是仓库的在线演示 :  [https://magic-agg.vercel.app/](https://magic-agg.vercel.app/)
