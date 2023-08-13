@@ -4,7 +4,6 @@ import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 import { RGBELoader } from "three/examples/jsm/loaders/RGBELoader";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 import { SelectiveBloom } from "./js/SelectiveBloom";
-import { DatGUI } from "./js/DatGUI";
 import Particles from "./Particles/Particles";
 import Time from "./Time";
 import "./App.css";
@@ -36,7 +35,6 @@ export default function App() {
   }, []);
 
   const initScene = async () => {
-    const time = new Time();
     const canvas = document.querySelector("canvas.webgl") as HTMLCanvasElement;
     const renderer = new THREE.WebGLRenderer({
       canvas: document.querySelector("canvas.webgl")!,
@@ -62,9 +60,6 @@ export default function App() {
     controls.autoRotate = true;
     controls.autoRotateSpeed = 0.5;
 
-    let selectiveBloom = new SelectiveBloom(scene, camera, renderer);
-    new DatGUI(renderer, selectiveBloom);
-
     let envMap = (await getCubeMapTexture(
       renderer,
       "./hdr/satara_night_4k.hdr"
@@ -79,9 +74,10 @@ export default function App() {
 
     let particles = new Particles(scene);
 
-    let clock = new THREE.Clock();
+    let selectiveBloom = new SelectiveBloom(scene, camera, renderer);
 
-    window.addEventListener("resize", onResize);
+    let time = new Time();
+    let clock = new THREE.Clock();
     renderer.setAnimationLoop(() => {
       let delta = clock.getDelta();
 
@@ -112,6 +108,8 @@ export default function App() {
 
       controls.update();
     });
+
+    window.addEventListener("resize", onResize);
 
     function onResize() {
       camera.aspect = window.innerWidth / window.innerHeight;
@@ -189,7 +187,13 @@ export default function App() {
   return (
     <div className="App">
       <div className="content">
-        <a className="title" href="https://github.com/WaterSeeding/MagicAgg" target="_blank">Made in Three.js</a>
+        <a
+          className="title"
+          href="https://github.com/WaterSeeding/MagicAgg"
+          target="_blank"
+        >
+          Made in Three.js
+        </a>
       </div>
       <canvas
         className="webgl"
